@@ -1,5 +1,9 @@
 FROM debian:bookworm-slim as builder
 
+ARG TARGETPLATFORM
+ARG TARGETARCH
+ARG BUILDPLATFORM
+
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         bzip2 \
@@ -28,13 +32,19 @@ RUN wget -O /tmp/pgloader.tar.gz -L \
     tar xf \
         /tmp/pgloader.tar.gz -C /opt/src/pgloader --strip-components=1
 
+RUN echo "Building on ${BUILDPLATFORM} for ${TARGETPLATFORM} (${TARGETARCH})"
+
 RUN mkdir -p /opt/src/pgloader/build/bin && \
     cd /opt/src/pgloader && \
     make DYNSIZE=32768 clones save
 
 FROM debian:bookworm-slim
 
+ARG TARGETPLATFORM
+ARG TARGETARCH
+
 LABEL maintainer=Roxedus
+LABEL org.opencontainers.image.description="pgloader binary container for ${TARGETPLATFORM} (${TARGETARCH})"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
