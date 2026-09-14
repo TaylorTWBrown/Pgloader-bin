@@ -1,4 +1,4 @@
-FROM debian:bookworm-slim as builder
+FROM debian:bookworm-slim AS builder
 
 ARG TARGETPLATFORM
 ARG TARGETARCH

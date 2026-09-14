@@ -63,10 +63,7 @@ jobs:
       - name: Grab binary
         run: |
           mkdir -p bin
-          docker pull ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.short_sha }}-${{ matrix.arch }}
-          docker create --name pgloader-${{ matrix.arch }} ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.short_sha }}-${{ matrix.arch }}
-          docker cp pgloader-${{ matrix.arch }}:/usr/local/bin/pgloader bin/pgloader-linux-${{ matrix.arch }}
-          docker rm -f pgloader-${{ matrix.arch }}
+          docker run --rm --platform ${{ matrix.platform }} --entrypoint cat ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.short_sha }}-${{ matrix.arch }} /usr/local/bin/pgloader > bin/pgloader-linux-${{ matrix.arch }}
           chmod +x bin/pgloader-linux-${{ matrix.arch }}
 
       - name: Smoke test image
